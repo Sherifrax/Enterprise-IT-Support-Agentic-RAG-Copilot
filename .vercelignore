@@ -1,0 +1,7 @@
+.env*
+.vercel/
+data/audit.db
+uploads/
+Agentic-RAG-Demo/
+frontend/node_modules/
+frontend/.next/
