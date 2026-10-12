@@ -1,96 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ app_name }}</title>
-    <link rel="stylesheet" href="/static/css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NovaRetail's agentic IT copilot searches private knowledge, grades the evidence, and shows its path to every answer." />
+  <title>NovaRetail / Knowledge Copilot</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/static/css/style.css" />
 </head>
-
 <body>
-    <div class="shell">
-        <aside class="sidebar">
-            <div>
-                <div class="brand-badge">FDE Project</div>
-                <h1>IT Support<br />Agentic RAG</h1>
-                <p class="muted">Private company knowledge first. External web only when evidence is weak.</p>
-            </div>
-
-            <div class="workflow-card">
-                <h3>LangGraph Workflow</h3>
-                <div class="flow-step">1. Route question</div>
-                <div class="flow-step">2. Retrieve private KB</div>
-                <div class="flow-step">3. Grade evidence</div>
-                <div class="flow-step">4. Web fallback if weak</div>
-                <div class="flow-step">5. Rewrite & retry</div>
-                <div class="flow-step">6. Grounded answer</div>
-            </div>
-
-            <button id="openUpload" class="secondary-btn">+ Add Company Document</button>
-        </aside>
-
-        <main class="main">
-            <header class="topbar">
-                <div>
-                    <span class="status-dot"></span>
-                    <span>Enterprise Knowledge Copilot</span>
-                </div>
-                <span class="pill">Agentic RAG</span>
-            </header>
-
-            <section id="chat" class="chat-area">
-                <div class="message assistant">
-                    <div class="avatar">AI</div>
-                    <div class="bubble">
-                        <strong>How can I help with IT support?</strong>
-                        <p>Try: “How do I connect to the company VPN?” or ask a question that may require current
-                            external vendor information.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="composer-wrap">
-                <div class="examples">
-                    <button class="example">How do I connect to the company VPN?</button>
-                    <button class="example">What is our password reset policy?</button>
-                    <button class="example">What is the latest Microsoft Teams outage guidance?</button>
-                </div>
-                <form id="chatForm" class="composer">
-                    <textarea id="question" rows="2" placeholder="Ask an IT support question..." required></textarea>
-                    <button type="submit" class="send-btn">Ask Agent</button>
-                </form>
-            </section>
-        </main>
-
-        <aside class="trace-panel">
-            <h2>Agent Trace</h2>
-            <p class="muted">Watch LangGraph decisions while the request runs.</p>
-            <div id="trace" class="trace-list">
-                <div class="empty">No request yet.</div>
-            </div>
-            <div class="source-box">
-                <span>Final Source</span>
-                <strong id="sourceUsed">—</strong>
-            </div>
-        </aside>
-    </div>
-
-    <div id="uploadModal" class="modal hidden">
-        <div class="modal-card">
-            <div class="modal-head">
-                <h2>Ingest Company Document</h2><button id="closeUpload">×</button>
-            </div>
-            <p class="muted">Upload PDF, TXT, Markdown, or DOCX. The document is chunked, embedded, and indexed into
-                Pinecone.</p>
-            <input id="adminKey" type="password" placeholder="Admin API key" />
-            <input id="fileInput" type="file" accept=".pdf,.txt,.md,.docx" />
-            <button id="uploadBtn" class="send-btn full">Index Document</button>
-            <div id="uploadStatus" class="upload-status"></div>
-        </div>
-    </div>
-
-    <script src="/static/js/app.js"></script>
+<div class="site-shell">
+  <header class="site-header">
+    <a href="#top" class="brand" aria-label="NovaRetail home"><span class="brand-mark"><span></span><span></span><span></span><span></span></span><span>nova<span class="brand-light">retail</span><small> / LAB</small></span></a>
+    <nav class="nav-links" id="siteNav" aria-label="Main navigation"><a href="#how-it-works">How it works</a><a href="#demo">Live workspace</a><button id="openUpload" type="button">Add a document <span aria-hidden="true">↗</span></button></nav>
+    <button id="menuToggle" class="mobile-menu" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-square"></span> FIELD ENGINEERING PROJECT <span class="eyebrow-rule"></span> 001</div><h1 id="hero-title">Support answers<br />with <em>receipts.</em></h1><p class="hero-lede">An agentic IT copilot that searches company knowledge, tests the evidence, and shows its path to every answer.</p><div class="hero-actions"><a class="button-primary" href="#demo">Explore the live workspace <span aria-hidden="true">↗</span></a><a href="#how-it-works" class="text-link">See the system <span aria-hidden="true">↘</span></a></div><div class="hero-meta"><span>✦ Private knowledge first</span><span>✦ Web fallback when needed</span></div></div>
+      <div class="scene" aria-label="Illustration of a question moving through private knowledge, evidence grading, and a grounded answer" role="img"><div class="scene-grid"></div><div class="scene-orbit scene-orbit-one"></div><div class="scene-orbit scene-orbit-two"></div><div class="scene-card scene-card-back"><span>01 / QUESTION</span><strong>How do I connect<br />to the VPN?</strong><i>↗</i></div><div class="scene-card scene-card-mid"><span>02 / RETRIEVE + GRADE</span><strong>Private knowledge<br />comes first.</strong><div class="scene-card-bars"><b></b><b></b><b></b></div></div><div class="scene-card scene-card-front"><span>03 / GROUNDED ANSWER</span><div class="scene-card-check">✓</div><strong>Evidence found.</strong><small>Company handbook · 2 sources</small></div><div class="scene-tag scene-tag-left">▦ PRIVATE KB</div><div class="scene-tag scene-tag-right">⌁ CONDITIONAL ROUTING</div><div class="scene-coordinate">N / R — 001<br />AGENT SYSTEM</div></div>
+      <div class="hero-side-label">AN INTERACTIVE RAG SYSTEM / 2026</div>
+    </section>
+    <section class="process-strip" id="how-it-works" aria-labelledby="process-title"><div class="section-kicker"><span>THE DECISION PATH</span><h2 id="process-title">One question. A visible chain of reasoning.</h2></div><div class="process-steps"><div class="process-step"><span class="process-number">01</span><div><strong>Route</strong><span>Understand the request</span></div><span class="process-arrow">→</span></div><div class="process-step"><span class="process-number">02</span><div><strong>Retrieve</strong><span>Search private documents</span></div><span class="process-arrow">→</span></div><div class="process-step"><span class="process-number">03</span><div><strong>Grade</strong><span>Check evidence quality</span></div><span class="process-arrow">→</span></div><div class="process-step"><span class="process-number">04</span><div><strong>Resolve</strong><span>Answer or search the web</span></div></div></div></section>
+    <section class="workspace-section" id="demo" aria-labelledby="workspace-title"><div class="workspace-heading"><div><div class="eyebrow eyebrow-dark"><span class="eyebrow-square"></span> INTERACTIVE DEMO / NOVARETAIL</div><h2 id="workspace-title">Put the agent to work<span>.</span></h2><p>Ask a real support question, then inspect how the answer was reached.</p></div><div class="workspace-live"><span></span> WORKSPACE / DEMO</div></div>
+      <div class="workspace-frame"><div class="workspace-topbar"><div class="workspace-brand"><span class="workspace-brand-icon">N</span><div><strong>Knowledge copilot</strong><small>NovaRetail IT / Agentic RAG</small></div></div><div class="workspace-top-actions"><span class="workspace-status"><span></span> Ask to run</span><button id="traceToggle" class="trace-toggle" type="button" aria-expanded="false" aria-controls="agent-trace">View trace ↗</button></div></div>
+        <div class="workspace-content"><div class="chat-column"><div id="chat" class="chat-area" aria-live="polite"><div id="chatEmpty" class="chat-empty"><div class="chat-empty-icon">▤</div><span class="chat-empty-index">01 / START HERE</span><h3>Your company knowledge,<br /><em>on call.</em></h3><p>Try a question below or ask your own. The agent will show which sources it used and why.</p><div class="chat-empty-decoration"><span></span><span></span><span></span></div></div></div><div class="composer-wrap"><div class="example-label">TRY A QUESTION ↘</div><div class="examples"><button class="example" type="button"><span>01</span>How do I connect to the company VPN? <b>↗</b></button><button class="example" type="button"><span>02</span>What is our password reset policy? <b>↗</b></button><button class="example" type="button"><span>03</span>What is the latest Microsoft Teams outage guidance? <b>↗</b></button></div><form id="chatForm" class="composer"><textarea id="question" rows="1" maxlength="3000" placeholder="Ask anything about IT support..." aria-label="Ask an IT support question" required></textarea><button type="submit" aria-label="Send question">↗</button></form><div class="composer-hint"><span>↵ Enter to send · Shift + Enter for a new line</span><span id="charCount">0 / 3000</span></div></div></div>
+        <aside id="agent-trace" class="trace-column"><div class="trace-panel"><div class="trace-head"><div class="trace-head-icon">⌁</div><span>TRANSPARENCY LAYER / 01</span><h3>The decision trace<span>.</span></h3><p>Follow the agent from question to source backed answer.</p></div><div class="trace-timeline"><div class="trace-timeline-heading"><span>WORKFLOW LOG</span><span>↗</span></div><div id="trace" class="trace-list"><div class="trace-empty"><span class="trace-empty-line"></span><div class="trace-empty-node">01</div><p>Ask a question to see each decision appear here.</p></div></div></div><div class="trace-source"><span>FINAL SOURCE</span><strong id="sourceUsed">Awaiting a question</strong><div class="trace-source-rule"></div></div></div></aside></div></div>
+      <p class="workspace-note">DEMO SYSTEM <span>↗</span> Answers depend on the connected knowledge base and service availability.</p>
+    </section>
+    <section class="build-section" aria-labelledby="build-title"><div class="build-copy"><span>BEHIND THE INTERFACE / 02</span><h2 id="build-title">The engine behind<br /><em>the answer.</em></h2><p>A conditional workflow connects private search, evidence checks, and a current information fallback through one API.</p><a href="https://github.com/Sherifrax/NovaRetail" target="_blank" rel="noopener noreferrer">Explore the source ↗</a></div><div class="build-stack"><div><span>01 / ORCHESTRATE</span><strong>LangGraph</strong><small>Route, grade, retry</small></div><div><span>02 / RETRIEVE</span><strong>Pinecone + OpenAI</strong><small>Private document search</small></div><div><span>03 / EXPAND</span><strong>Tavily</strong><small>Web fallback for weak evidence</small></div><div><span>04 / DELIVER</span><strong>FastAPI</strong><small>Answers, citations, trace</small></div></div></section>
+  </main>
+  <footer class="site-footer"><div class="brand brand-footer"><span class="brand-mark"><span></span><span></span><span></span><span></span></span><span>nova<span class="brand-light">retail</span><small> / LAB</small></span></div><span>Built to make the agent's decisions visible.</span><a href="#top">Back to top ↑</a></footer>
+</div>
+<div id="uploadModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="uploadTitle"><div class="modal-card"><div class="modal-head"><div><span class="modal-eyebrow">KNOWLEDGE BASE / ADMIN</span><h2 id="uploadTitle">Add a company document<span>.</span></h2></div><button id="closeUpload" aria-label="Close dialog" type="button">×</button></div><p>Upload a PDF, TXT, Markdown, or DOCX file to index it in the private knowledge base.</p><label for="adminKey">ADMIN API KEY</label><input id="adminKey" type="password" placeholder="Enter your key" /><label for="fileInput">DOCUMENT</label><input id="fileInput" type="file" accept=".pdf,.txt,.md,.docx" /><button id="uploadBtn" class="modal-submit" type="button">Index document ↗</button><div id="uploadStatus" class="upload-status" aria-live="polite"></div></div></div>
+<script src="/static/js/app.js"></script>
 </body>
-
 </html>

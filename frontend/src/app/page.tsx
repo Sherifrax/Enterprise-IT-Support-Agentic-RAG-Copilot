@@ -1,150 +1,81 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useState } from "react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Database, GitBranch, Menu, ShieldCheck, Sparkles, X } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
-import Sidebar from "@/components/Sidebar";
 import ChatArea from "@/components/ChatArea";
 import Composer from "@/components/Composer";
 import TracePanel from "@/components/TracePanel";
 import UploadModal from "@/components/UploadModal";
-import { Bot, Zap, Wifi, Menu, X } from "lucide-react";
 
-// Load canvas background client-side only (no SSR)
-const NeuralBackground = dynamic(() => import("@/components/NeuralBackground"), { ssr: false });
+function KnowledgeScene() {
+  return (
+    <div className="scene" aria-label="Illustration of a question moving through private knowledge, evidence grading, and a grounded answer" role="img">
+      <div className="scene-grid" />
+      <div className="scene-orbit scene-orbit-one" />
+      <div className="scene-orbit scene-orbit-two" />
+      <div className="scene-card scene-card-back"><span>01 / QUESTION</span><strong>How do I connect<br />to the VPN?</strong><i>↗</i></div>
+      <div className="scene-card scene-card-mid"><span>02 / RETRIEVE + GRADE</span><strong>Private knowledge<br />comes first.</strong><div className="scene-card-bars"><b /><b /><b /></div></div>
+      <div className="scene-card scene-card-front"><span>03 / GROUNDED ANSWER</span><div className="scene-card-check">✓</div><strong>Evidence found.</strong><small>Company handbook · 2 sources</small></div>
+      <div className="scene-tag scene-tag-left"><Database size={14} /> PRIVATE KB</div>
+      <div className="scene-tag scene-tag-right"><GitBranch size={14} /> CONDITIONAL ROUTING</div>
+      <div className="scene-coordinate">N / R — 001<br />AGENT SYSTEM</div>
+    </div>
+  );
+}
+
+const workflow = [
+  { n: "01", title: "Route", detail: "Understand the request" },
+  { n: "02", title: "Retrieve", detail: "Search private documents" },
+  { n: "03", title: "Grade", detail: "Check evidence quality" },
+  { n: "04", title: "Resolve", detail: "Answer or search the web" },
+];
 
 export default function Home() {
   const { messages, trace, sourceUsed, isLoading, sendMessage } = useChat();
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [traceOpen, setTraceOpen] = useState(false);
+  const scrollToDemo = () => document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <div className="relative flex h-screen overflow-hidden">
-
-      {/* ── Animated neural background ── */}
-      <NeuralBackground />
-
-      {/* ── Radial gradient overlays ── */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {/* Top-left emerald bloom */}
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full
-                        bg-gradient-radial from-emerald-500/8 to-transparent blur-3xl" />
-        {/* Bottom-right indigo bloom */}
-        <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full
-                        bg-gradient-radial from-indigo-600/6 to-transparent blur-3xl" />
-        {/* Center cyan accent */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                        w-[800px] h-[400px] rounded-full
-                        bg-gradient-radial from-cyan-500/3 to-transparent blur-3xl" />
-        {/* Vignette */}
-        <div className="absolute inset-0"
-             style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(4,6,8,0.7) 100%)" }} />
-      </div>
-
-      {/* ── 3-Column layout ── */}
-      <div className="relative flex w-full h-full" style={{ zIndex: 2 }}>
-
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* ── LEFT: Sidebar ── */}
-        <div className={`
-          fixed lg:relative top-0 left-0 h-full z-50 lg:z-auto
-          w-[260px] flex-shrink-0 transition-transform duration-300 ease-out
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}>
-          <Sidebar onOpenUpload={() => { setUploadOpen(true); setSidebarOpen(false); }} />
-        </div>
-
-        {/* ── CENTER: Chat ── */}
-        <main className="flex flex-col flex-1 min-w-0">
-          {/* Top bar */}
-          <header className="flex items-center justify-between px-5 lg:px-8 h-[60px] flex-shrink-0
-                             glass-strong border-b border-white/[0.06]">
-            <div className="flex items-center gap-3">
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden flex items-center justify-center w-8 h-8 rounded-lg
-                           glass-card text-slate-500 hover:text-white transition-colors"
-              >
-                {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </button>
-
-              {/* Title with pulse */}
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-glow" />
-                </div>
-                <span className="text-sm font-semibold text-slate-200 hidden sm:block">
-                  Enterprise Knowledge Copilot
-                </span>
-                <span className="text-sm font-semibold text-slate-200 sm:hidden">
-                  Knowledge Copilot
-                </span>
-              </div>
-            </div>
-
-            {/* Right badges */}
-            <div className="flex items-center gap-2">
-              <div className="status-badge glass-card border border-white/[0.07] text-slate-400">
-                <Wifi className="w-3 h-3 text-emerald-400" />
-                <span className="hidden sm:inline">Live</span>
-              </div>
-              <div className="status-badge glass-card border border-white/[0.07] text-slate-400">
-                <Zap className="w-3 h-3 text-amber-400" />
-                <span className="hidden sm:inline">Agentic RAG</span>
-              </div>
-              <div className="status-badge glass-card border border-white/[0.07] text-slate-400">
-                <Bot className="w-3 h-3 text-indigo-400" />
-                <span className="hidden sm:inline">LangGraph</span>
-              </div>
-              {/* Mobile trace toggle */}
-              <button
-                onClick={() => setTraceOpen(!traceOpen)}
-                className="xl:hidden status-badge glass-card border border-white/[0.07] text-slate-400
-                           hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
-              >
-                Trace
-              </button>
-            </div>
-          </header>
-
-          {/* Messages */}
-          <ChatArea messages={messages} isLoading={isLoading} />
-
-          {/* Composer */}
-          <Composer onSend={sendMessage} isLoading={isLoading} />
-        </main>
-
-        {/* ── RIGHT: Trace panel ── */}
-        <div className={`
-          fixed xl:relative top-0 right-0 h-full z-50 xl:z-auto
-          w-[280px] flex-shrink-0 transition-transform duration-300 ease-out
-          ${traceOpen ? "translate-x-0" : "translate-x-full xl:translate-x-0"}
-        `}>
-          {traceOpen && (
-            <div className="xl:hidden absolute top-4 left-4 z-10">
-              <button
-                onClick={() => setTraceOpen(false)}
-                className="w-7 h-7 glass-card rounded-lg flex items-center justify-center
-                           text-slate-500 hover:text-white transition-colors"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-          <TracePanel trace={trace} sourceUsed={sourceUsed} />
-        </div>
-      </div>
-
-      {/* ── Upload modal ── */}
+    <div className="site-shell">
+      <header className="site-header">
+        <a href="#top" className="brand" aria-label="NovaRetail home"><span className="brand-mark"><span /><span /><span /><span /></span><span>nova<span className="brand-light">retail</span><small> / LAB</small></span></a>
+        <nav className={mobileMenuOpen ? "nav-links nav-links-open" : "nav-links"} aria-label="Main navigation">
+          <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How it works</a>
+          <a href="#demo" onClick={() => setMobileMenuOpen(false)}>Live workspace</a>
+          <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }}>Add a document <ArrowRight size={15} /></button>
+        </nav>
+        <button className="mobile-menu" aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X /> : <Menu />}</button>
+      </header>
+      <main id="top">
+        <section className="hero" aria-labelledby="hero-title">
+          <div className="hero-copy">
+            <div className="eyebrow"><span className="eyebrow-square" /> FIELD ENGINEERING PROJECT <span className="eyebrow-rule" /> 001</div>
+            <h1 id="hero-title">Support answers<br />with <em>receipts.</em></h1>
+            <p className="hero-lede">An agentic IT copilot that searches company knowledge, tests the evidence, and shows its path to every answer.</p>
+            <div className="hero-actions"><button className="button-primary" onClick={scrollToDemo}>Explore the live workspace <ArrowRight size={18} /></button><a href="#how-it-works" className="text-link">See the system <ArrowDownRight size={17} /></a></div>
+            <div className="hero-meta"><span><ShieldCheck size={15} /> Private knowledge first</span><span><Sparkles size={15} /> Web fallback when needed</span></div>
+          </div>
+          <KnowledgeScene />
+          <div className="hero-side-label">AN INTERACTIVE RAG SYSTEM / 2026</div>
+        </section>
+        <section className="process-strip" id="how-it-works" aria-labelledby="process-title">
+          <div className="section-kicker"><span>THE DECISION PATH</span><h2 id="process-title">One question. A visible chain of reasoning.</h2></div>
+          <div className="process-steps">{workflow.map((step) => <div className="process-step" key={step.n}><span className="process-number">{step.n}</span><div><strong>{step.title}</strong><span>{step.detail}</span></div><ArrowRight size={17} aria-hidden="true" /></div>)}</div>
+        </section>
+        <section className="workspace-section" id="demo" aria-labelledby="workspace-title">
+          <div className="workspace-heading"><div><div className="eyebrow eyebrow-dark"><span className="eyebrow-square" /> INTERACTIVE DEMO / NOVARETAIL</div><h2 id="workspace-title">Put the agent to work<span>.</span></h2><p>Ask a real support question, then inspect how the answer was reached.</p></div><div className="workspace-live"><span /> WORKSPACE / DEMO</div></div>
+          <div className="workspace-frame">
+            <div className="workspace-topbar"><div className="workspace-brand"><span className="workspace-brand-icon">N</span><div><strong>Knowledge copilot</strong><small>NovaRetail IT / Agentic RAG</small></div></div><div className="workspace-top-actions"><span className="workspace-status"><span /> Ask to run</span><button onClick={() => setTraceOpen(!traceOpen)} className="trace-toggle" aria-expanded={traceOpen} aria-controls="agent-trace">{traceOpen ? "Hide" : "View"} trace <GitBranch size={14} /></button></div></div>
+            <div className="workspace-content"><div className="chat-column"><ChatArea messages={messages} isLoading={isLoading} /><Composer onSend={sendMessage} isLoading={isLoading} /></div><div id="agent-trace" className={traceOpen ? "trace-column trace-column-open" : "trace-column"}><TracePanel trace={trace} sourceUsed={sourceUsed} /></div></div>
+          </div>
+          <p className="workspace-note">DEMO SYSTEM <span>↗</span> Answers depend on the connected knowledge base and service availability.</p>
+        </section>
+        <section className="build-section" aria-labelledby="build-title"><div className="build-copy"><span>BEHIND THE INTERFACE / 02</span><h2 id="build-title">The engine behind<br /><em>the answer.</em></h2><p>A conditional workflow connects private search, evidence checks, and a current information fallback through one API.</p><a href="https://github.com/Sherifrax/NovaRetail" target="_blank" rel="noopener noreferrer">Explore the source <ArrowUpRight size={17} /></a></div><div className="build-stack"><div><span>01 / ORCHESTRATE</span><strong>LangGraph</strong><small>Route, grade, retry</small></div><div><span>02 / RETRIEVE</span><strong>Pinecone + OpenAI</strong><small>Private document search</small></div><div><span>03 / EXPAND</span><strong>Tavily</strong><small>Web fallback for weak evidence</small></div><div><span>04 / DELIVER</span><strong>FastAPI</strong><small>Answers, citations, trace</small></div></div></section>
+      </main>
+      <footer className="site-footer"><div className="brand brand-footer"><span className="brand-mark"><span /><span /><span /><span /></span><span>nova<span className="brand-light">retail</span><small> / LAB</small></span></div><span>Built to make the agent&apos;s decisions visible.</span><a href="#top">Back to top ↑</a></footer>
       <UploadModal open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </div>
   );
