@@ -69,9 +69,11 @@ def ensure_index():
             current_dimension = index_info.get("dimension")
 
         if current_dimension is not None and current_dimension != desired_dimension:
-            pc.delete_index(name=settings.pinecone_index_name)
-            while settings.pinecone_index_name in [x["name"] for x in pc.list_indexes()]:
-                time.sleep(1)
+            raise ValueError(
+                f"Pinecone index '{settings.pinecone_index_name}' has dimension "
+                f"{current_dimension}, but {settings.embedding_model} requires {desired_dimension}. "
+                "Choose a compatible index or a different PINECONE_INDEX_NAME."
+            )
 
     if settings.pinecone_index_name not in [x["name"] for x in pc.list_indexes()]:
         pc.create_index(

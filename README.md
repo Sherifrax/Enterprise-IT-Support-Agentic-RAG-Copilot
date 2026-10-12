@@ -2,7 +2,15 @@
 
 An end-to-end Forward Deployed Engineer (FDE) project for a fictional retail company's internal IT support team. The application combines LangGraph, OpenAI chat and embeddings, a private Pinecone knowledge base, Tavily web search, FastAPI, and two web interfaces: a built-in HTML/CSS/JavaScript interface and a separate Next.js frontend.
 
-> **Project status:** The API, agent workflow, ingestion code, sample knowledge base, audit logging, and both interfaces are in this repository. Running chat and indexing requires installed dependencies, service credentials, and network access. Deployment and automated end-to-end tests are not yet included.
+> **Project status:** The API, agent workflow, ingestion code, sample knowledge base, audit logging, and both interfaces are in this repository. Running chat and indexing requires installed dependencies, service credentials, and network access.
+
+## Deploy to Vercel
+
+Import this repository with the **Services** preset. `vercel.json` deploys the Next.js interface as `frontend` at `/` and the FastAPI service as `api` at `/api/*`. The browser calls the API through the same domain, so no service binding is needed. `Agentic-RAG-Demo/` is reference material and is not deployed as a service.
+
+Set `OPENAI_API_KEY`, `PINECONE_API_KEY`, and `TAVILY_API_KEY` in the Vercel project's environment variables before using chat. Set `ADMIN_API_KEY` to a long, unique secret if document upload is needed. With no admin key configured, uploads are disabled. The Pinecone index must have the dimension required by `EMBEDDING_MODEL` (1536 for the default model); the application will fail with a configuration error instead of deleting an incompatible index.
+
+Vercel functions use temporary storage. Uploaded files and the SQLite audit database are stored under `/tmp` there, and may disappear between invocations. Ingested vectors persist in Pinecone. Use a durable database if audit retention is required. The API does not authenticate chat requests; add access protection before using this as a private IT service.
 
 ## 1. Business problem
 
@@ -193,12 +201,12 @@ The checked-in `.env.example` currently lists Tavily and Pinecone keys plus an u
 | `EMBEDDING_MODEL` | OpenAI embedding model | `text-embedding-3-small` |
 | `TOP_K` | Number of private chunks retrieved | `4` |
 | `MAX_RETRIES` | Query rewrite retries | `1` |
-| `ADMIN_API_KEY` | Header value for document uploads | `change-me` |
+| `ADMIN_API_KEY` | Header value for document uploads | Empty; upload disabled |
 | `APP_ENV` | Environment label | `development` |
 
 `.env` is ignored by Git. Change the default admin key before sharing the app. Chat questions and workflow traces are written to `data/audit.db`, so treat that database as potentially sensitive. The current API does not authenticate chat requests, and the admin key is the only upload check; do not expose this development setup publicly without access controls.
 
-**Pinecone index caution:** `ensure_index()` creates a serverless index in AWS `us-east-1` if one is missing. If an existing index with the configured name has a different embedding dimension, the current code **deletes and recreates it**. Use a dedicated index name and check its dimension before running against data you need to keep. The default `text-embedding-3-small` dimension is `1536`.
+**Pinecone index caution:** `ensure_index()` creates a serverless index in AWS `us-east-1` if one is missing. If an existing index has a different embedding dimension, the application raises an error. Use a dedicated index name. The default `text-embedding-3-small` dimension is `1536`.
 
 ### Step 4 — Index the sample knowledge base
 
